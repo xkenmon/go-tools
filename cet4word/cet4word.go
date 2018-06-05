@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/xkenmon/tools/cet4word/excel"
+	"github.com/xkenmon/go-tools/cet4word/excel"
 	"math/rand"
 	"time"
 )
 
 func main() {
 	rand.Seed(time.Now().Unix())
-	item, err := excel.Reader("/home/bigmeng/Desktop/cet4word.xlsx", rand.Int()%4562)
+	item, err := excel.Reader("/home/bigmeng/Desktop/cet4word.xlsx", rand.Int()%4449)
 	if err != nil {
 		println(err)
 		return

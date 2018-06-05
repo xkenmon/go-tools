@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/xkenmon/tools/mycat/download"
+	"github.com/xkenmon/go-tools/mycat/download"
 )
 
 var (
