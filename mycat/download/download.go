@@ -52,13 +52,13 @@ func GetPicInfo(startdate string) *PicInfo {
 		os.Exit(1)
 	}
 	defer resp.Body.Close()
-	json_content, err := ioutil.ReadAll(resp.Body)
+	jsonContent, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 	info := &PicInfo{}
-	err = json.Unmarshal(json_content, info)
+	err = json.Unmarshal(jsonContent, info)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
