@@ -3,25 +3,31 @@ package controller
 import (
 	"net/http"
 	"github.com/xkenmon/wego"
+	"github.com/xkenmon/wego/context"
 )
 
-func Index(w http.ResponseWriter, r *http.Request) {
+func Index(ctx *context.Context) error {
+	r := ctx.Request
+	w := ctx.ResponseWriter
+
+	ctxPath := ctx.In.GetSessionOrElse("ctxPath", ".").(string)
 
 	p := r.FormValue("contextPath")
 	if p != "" {
 		u := r.URL
-		u.Path = "/list"
+		u.Path = "/list/"
 		u.RawQuery = ""
 
-		SetCtxPath(p)
+		ctx.In.SetSession("ctxPath", p)
 		http.Redirect(w, r, u.String(), http.StatusSeeOther)
-		return
+		return nil
 	}
 
 	tpl, err := wego.GetTpl("index.tpl")
-	checkErr(err)
-	err = tpl.Execute(w, nil)
-	checkErr(err)
-
-	defer WriteErr(w, recover())
+	if err != nil {
+		return err
+	}
+	return tpl.Execute(w, map[string]interface{}{
+		"path": ctxPath,
+	})
 }

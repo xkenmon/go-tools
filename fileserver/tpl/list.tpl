@@ -5,28 +5,35 @@
 
 </head>
 <style>
-    a {
-        width: 300px;
+    div{
+        height: 28px;
+        align-items: center;
+    }
+    .a_inline {
+        width: 200px;
         overflow: hidden;
+        display: inline-block;
     }
 
     span {
-        width: 300px;
+        width: 150px;
         overflow: hidden;
+        display: inline-block;
     }
 </style>
 <body>
 <h1>{{.path}}</h1>
 
-<div><a href="/list/{{.parent}}">返回上一级</a></div>
+<div><a href="/list/{{urlquery .parent}}">返回上一级</a></div>
 {{range .info}}
 <div>
-    <a href="/list/{{$.path}}/{{GetName .}}">{{GetName .}}</a> <span>{{GetTime .}}</span>
+    <a class="a_inline" href="/list/{{urlquery (print $.path "/" (GetName .))}}">{{GetName .}}</a>
 {{if .IsDir}}
-    <a href="/download/{{$.path}}/{{GetName .}}">下载压缩包</a>
+    <span><a href="/download/{{urlquery (print $.path "/" (GetName .))}}">下载压缩包</a></span>
 {{else}}
     <span>{{GetSize .}}</span>
 {{end}}
+    <span>{{GetTime .}}</span>
 </div>
 {{end}}
 

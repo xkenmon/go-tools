@@ -9,6 +9,7 @@ import (
 	"github.com/xkenmon/wego/util"
 	"github.com/xkenmon/wego"
 	"path/filepath"
+	"github.com/xkenmon/wego/context"
 )
 
 var funcList = template.FuncMap{
@@ -18,10 +19,16 @@ var funcList = template.FuncMap{
 	"GetSize": func(info os.FileInfo) string { return humanize.Bytes(uint64(info.Size())) },
 }
 
-func ListFile(w http.ResponseWriter, r *http.Request) {
-	defer WriteErr(w, recover())
+func ListFile(ctx *context.Context) error {
+	r := ctx.Request
+	w := ctx.ResponseWriter
+
+	ctxPath := ctx.In.GetSessionOrElse("ctxPath",".").(string)
+
 	paths, err := util.ParsePathVar(r, "/list/{**}")
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	path := paths[0]
 	log.Println(path)
 	if path == "" {
@@ -31,15 +38,20 @@ func ListFile(w http.ResponseWriter, r *http.Request) {
 	if info, err := dir.Stat(); err == nil {
 		if !info.IsDir() {
 			r.URL.Path = path
-			http.FileServer(http.Dir(".")).ServeHTTP(w, r)
-			return
+			http.FileServer(http.Dir(ctxPath)).ServeHTTP(w, r)
+			return nil
 		}
+	} else {
+		return err
 	}
-	checkErr(err)
 	infoList, err := dir.Readdir(-1)
-	checkErr(err)
+	if err != nil {
+		return nil
+	}
 	t, err := wego.GetTplWithFuncs(funcList, "list.tpl")
-	err = t.Execute(w,
+	if err != nil {
+		return err
+	}
+	return t.Execute(w,
 		map[string]interface{}{"info": infoList, "path": path, "parent": filepath.Join(path, "..")})
-	checkErr(err)
 }
